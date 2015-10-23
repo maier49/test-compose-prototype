@@ -1,0 +1,28 @@
+{
+	"version": "1.6.2",
+	"compilerOptions": {
+		"declaration": false,
+		"module": "umd",
+		"noImplicitAny": true,
+		"outDir": "_build/",
+		"removeComments": false,
+		"sourceMap": true,
+		"target": "es5",
+		"moduleResolution": "node"
+	},
+	"filesGlob": [
+		"./src/**/*.ts",
+		"./tests/**/*.ts",
+		"./_modules/**/*.d.ts"
+	],
+	"files": [
+		"./src/Editor.ts",
+		"./src/List.ts",
+		"./src/Pagination.ts",
+		"./src/main.ts",
+		"./_modules/dojo-compose/typings/dojo-compose/dojo-compose-2.0.0-pre.d.ts",
+		"./_modules/dojo-compose/typings/node/node.d.ts",
+		"./_modules/dojo-core/_typings/dojo-core/dojo-core-2.0.0-pre.d.ts"
+	],
+	"exclude": []
+}

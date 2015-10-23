@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+	<div id="grid"></div>
+	<div id="paginated"></div>
+	<div id="editor"></div>
+	<div id="combo"></div>
+	<script src="./require.js"></script>
+	<script>
+		require.config({
+			paths: {
+				'dojo-compose': '_modules/dojo-compose',
+				'dojo-core': '_modules/dojo-core'
+			}
+		});
+		require(['./dist/main']);
+	</script>
+</body>
+</html>
