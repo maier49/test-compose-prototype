@@ -1,13 +1,12 @@
-(function (deps, factory) {
+(function (factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(deps, factory);
+        define(["require", "exports", 'dojo-core/WeakMap', './aspect'], factory);
     }
-})(["require", "exports", 'dojo-core/WeakMap', 'dojo-core/lang', './aspect'], function (require, exports) {
+})(function (require, exports) {
     var WeakMap_1 = require('dojo-core/WeakMap');
-    var lang_1 = require('dojo-core/lang');
     var aspect_1 = require('./aspect');
     /* A weakmap that will store initialization functions for compose constructors */
     var initFnMap = new WeakMap_1.default();
@@ -25,13 +24,30 @@
             return fn.apply(this, [this].concat(args));
         };
     }
+    /**
+     * A helper function that copies own properties and their descriptors
+     * from one or more sources to a target object. Includes non-enumerable properties
+     */
+    function copyProperties(target) {
+        var sources = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            sources[_i - 1] = arguments[_i];
+        }
+        sources.forEach(function (source) {
+            Object.defineProperties(target, Object.getOwnPropertyNames(source).reduce(function (descriptors, key) {
+                descriptors[key] = Object.getOwnPropertyDescriptor(source, key);
+                return descriptors;
+            }, {}));
+        });
+        return target;
+    }
     /* The rebased functions we need to decorate compose constructors with */
     var doExtend = rebase(extend);
     var doMixin = rebase(mixin);
     var doOverlay = rebase(overlay);
     var doAspect = rebase(aspect);
     /**
-     * A convience function to decorate a compose class constructors
+     * A convenience function to decorate compose class constructors
      * @param {any} base The target constructor
      */
     function stamp(base) {
@@ -44,41 +60,69 @@
         base.around = doAround;
         base.aspect = doAspect;
     }
-    function cloneCreator(base) {
-        function Creator() {
-            var _this = this;
+    function cloneFactory(base) {
+        function factory() {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i - 0] = arguments[_i];
             }
-            initFnMap.get(this.constructor).forEach(function (fn) { return fn.apply(_this, args); });
+            if (this && this.constructor === factory) {
+                throw new SyntaxError('Factories cannot be called with "new".');
+            }
+            var instance = Object.create(factory.prototype);
+            initFnMap.get(factory).forEach(function (fn) { return fn.apply(instance, args); });
+            return instance;
         }
         if (base) {
-            lang_1.assign(Creator.prototype, base.prototype);
-            initFnMap.set(Creator, [].concat(initFnMap.get(base)));
+            copyProperties(factory.prototype, base.prototype);
+            initFnMap.set(factory, [].concat(initFnMap.get(base)));
         }
         else {
-            initFnMap.set(Creator, []);
+            initFnMap.set(factory, []);
         }
-        Creator.prototype.constructor = Creator;
-        stamp(Creator);
-        Object.freeze(Creator);
-        return Creator;
+        factory.prototype.constructor = factory;
+        stamp(factory);
+        Object.freeze(factory);
+        return factory;
     }
+    /**
+     * Takes any init functions from source and concats them to base
+     * @param target The compose factory to copy the init functions onto
+     * @param source The ComposeFactory to copy the init functions from
+     */
+    function concatInitFn(target, source) {
+        var initFn = initFnMap.get(target);
+        /* making sure only unique functions get added */
+        initFnMap.get(source).forEach(function (item) {
+            if (initFn.indexOf(item) < 0) {
+                initFn.unshift(item);
+            }
+        });
+    }
+    /**
+     * A custom type guard that determines if the value is a ComposeFactory
+     * @param   value The target to check
+     * @returns       Return true if it is a ComposeFactory, otherwise false
+     */
+    function isComposeFactory(value) {
+        return Boolean(initFnMap.get(value));
+    }
+    exports.isComposeFactory = isComposeFactory;
     function extend(base, extension) {
-        base = cloneCreator(base);
-        Object.keys(extension).forEach(function (key) { return base.prototype[key] = extension[key]; });
-        Object.freeze(base.prototype);
+        base = cloneFactory(base);
+        copyProperties(base.prototype, extension);
         return base;
     }
     function mixin(base, mixin) {
-        base = cloneCreator(base);
-        Object.keys(mixin.prototype).forEach(function (key) { return base.prototype[key] = mixin.prototype[key]; });
-        Object.freeze(base.prototype);
+        base = cloneFactory(base);
+        if (isComposeFactory(mixin)) {
+            concatInitFn(base, mixin);
+        }
+        copyProperties(base.prototype, mixin.prototype);
         return base;
     }
     function overlay(base, overlayFunction) {
-        base = cloneCreator(base);
+        base = cloneFactory(base);
         overlayFunction(base.prototype);
         return base;
     }
@@ -86,7 +130,7 @@
         return base.prototype[method];
     }
     function doFrom(base, method) {
-        var clone = cloneCreator(this);
+        var clone = cloneFactory(this);
         clone.prototype[method] = base.prototype[method];
         return clone;
     }
@@ -108,7 +152,7 @@
         return aspect_1.before(method, advice);
     }
     function doBefore(method, advice) {
-        var clone = cloneCreator(this);
+        var clone = cloneFactory(this);
         clone.prototype[method] = aspect_1.before(clone.prototype[method], advice);
         return clone;
     }
@@ -130,7 +174,7 @@
         return aspect_1.after(method, advice);
     }
     function doAfter(method, advice) {
-        var clone = cloneCreator(this);
+        var clone = cloneFactory(this);
         clone.prototype[method] = aspect_1.after(clone.prototype[method], advice);
         return clone;
     }
@@ -152,12 +196,12 @@
         return aspect_1.around(method, advice);
     }
     function doAround(method, advice) {
-        var clone = cloneCreator(this);
+        var clone = cloneFactory(this);
         clone.prototype[method] = aspect_1.around(clone.prototype[method], advice);
         return clone;
     }
     function aspect(base, advice) {
-        var clone = cloneCreator(base);
+        var clone = cloneFactory(base);
         function mapAdvice(adviceHash, advisor) {
             for (var key in adviceHash) {
                 if (key in clone.prototype) {
@@ -180,14 +224,14 @@
         return clone;
     }
     function create(base, initFunction) {
-        var Creator = cloneCreator();
+        var factory = cloneFactory();
         if (initFunction) {
-            initFnMap.get(Creator).push(initFunction);
+            initFnMap.get(factory).push(initFunction);
         }
         /* mixin the base into the prototype */
-        lang_1.assign(Creator.prototype, typeof base === 'function' ? base.prototype : base);
+        copyProperties(factory.prototype, typeof base === 'function' ? base.prototype : base);
         /* return the new constructor */
-        return Creator;
+        return factory;
     }
     /* Generate compose */
     create.create = create;

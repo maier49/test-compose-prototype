@@ -1,7 +1,7 @@
 import { List, ListInit } from './List';
-import { Pagination, PaginationAdvice, PaginationInit } from './Pagination';
-import { Editor, EditorInit, EditorAdvice } from './Editor';
-import { Decorator, DecoratorInit, DecoratorAdvice } from './Decorator';
+import { Pagination, paginationAdvice, paginationInit } from './Pagination';
+import { Editor, editorInit, editorAdvice } from './Editor';
+import { Decorator, decoratorInit, decoratorAdvice } from './Decorator';
 import compose from 'dojo-compose/compose';
 import { before } from 'dojo-compose/aspect';
 
@@ -10,17 +10,16 @@ const columns: {name: string, field: string}[] = [
 	{ name: 'Last Name', field: 'last' }
 ];
 
-const ListClass = compose(List, ListInit);
-const PaginatedList = compose(List, before(ListInit, PaginationInit)).mixin(Pagination).aspect(PaginationAdvice());
-const EditorList = compose(List, before(ListInit, EditorInit)).mixin(Editor).aspect(EditorAdvice());
-const PaginatedEditorDecoratorList = compose(List,
-	before(before(before(ListInit, PaginationInit), EditorInit), DecoratorInit))
-	.mixin(Pagination)
-	.aspect(PaginationAdvice())
-	.mixin(Editor)
-	.aspect(EditorAdvice())
-	.mixin(Decorator)
-	.aspect(DecoratorAdvice());
+const listFactory = compose(List, ListInit);
+const paginatedListFactory = compose(List, ListInit).mixin(compose(Pagination, paginationInit)).aspect(paginationAdvice);
+const EditorList = compose(List, ListInit).mixin(compose(Editor, editorInit)).aspect(editorAdvice);
+const paginatedEditorDecoratorListFactory = compose(List, ListInit)
+	.mixin(compose(Pagination, paginationInit))
+	.aspect(paginationAdvice)
+	.mixin(compose(Editor, editorInit))
+	.aspect(editorAdvice)
+	.mixin(compose(Decorator, decoratorInit))
+	.aspect(decoratorAdvice);
 
 const data: { [ index: string ]: string }[] = [
 	{ first: 'Bob', last: 'The Builder' },
@@ -28,10 +27,10 @@ const data: { [ index: string ]: string }[] = [
 	{ first: 'Tom', last: 'Hanks' }
 ];
 
-const basicList = new ListClass({domNode: document.body.querySelector('#grid'), columns: columns });
+const basicList = listFactory({domNode: document.body.querySelector('#grid'), columns: columns });
 basicList.render(data);
 
-const paginatedList = new PaginatedList({
+const paginatedList = paginatedListFactory({
 	rowsPerPage: 1,
 	pageNumber: 1,
 	domNode: document.body.querySelector('#paginated'),
@@ -39,14 +38,14 @@ const paginatedList = new PaginatedList({
 });
 paginatedList.render(data);
 
-const editorList = new EditorList({
+const editorList = EditorList({
 	editableFields: [ 'first' ],
 	columns: columns,
 	domNode: document.body.querySelector('#editor')
 });
 editorList.render(data);
 
-const mixedList = new PaginatedEditorDecoratorList({
+const mixedList = paginatedEditorDecoratorListFactory({
 	editableFields: [ 'first' ],
 	columns: columns,
 	domNode: document.body.querySelector('#combo'),

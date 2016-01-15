@@ -1,11 +1,11 @@
-(function (deps, factory) {
+(function (factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(deps, factory);
+        define(["require", "exports", 'dojo-core/WeakMap'], factory);
     }
-})(["require", "exports", 'dojo-core/WeakMap'], function (require, exports) {
+})(function (require, exports) {
     var WeakMap_1 = require('dojo-core/WeakMap');
     (function (AdviceType) {
         AdviceType[AdviceType["Before"] = 0] = "Before";
