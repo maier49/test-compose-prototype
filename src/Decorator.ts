@@ -1,4 +1,4 @@
-import { AspectAdvice } from 'dojo-compose/compose';
+import compose, { AspectAdvice, ComposeFactory } from 'dojo-compose/compose';
 export class Decorator {
 	color: string;
 	fieldsToDecorate: string[];
@@ -22,4 +22,8 @@ export const decoratorAdvice: AspectAdvice = {
 export function decoratorInit(options: { [ index: string ]: any }) {
 	this.color = options['color'];
 	this.fieldsToDecorate = options['fieldsToDecorate'];
+}
+
+export function decoratorFactory<O, A>(factory: ComposeFactory<O, A>): ComposeFactory<O, A & Decorator> {
+	return compose.mixin(factory, compose(Decorator, decoratorInit)).aspect(decoratorAdvice)
 }

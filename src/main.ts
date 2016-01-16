@@ -1,7 +1,7 @@
-import { List, ListInit } from './List';
+import { listBase } from './List';
 import { paginationFactory } from './Pagination';
-import { Editor, editorInit, editorAdvice } from './Editor';
-import { Decorator, decoratorInit, decoratorAdvice } from './Decorator';
+import { editorFactory } from './Editor';
+import { decoratorFactory } from './Decorator';
 import compose from 'dojo-compose/compose';
 import { before } from 'dojo-compose/aspect';
 
@@ -10,14 +10,10 @@ const columns: {name: string, field: string}[] = [
 	{ name: 'Last Name', field: 'last' }
 ];
 
-const listFactory = compose(List, ListInit);
-const paginatedListFactory = paginationFactory(compose(List, ListInit));
-const EditorList = compose(List, ListInit).mixin(compose(Editor, editorInit)).aspect(editorAdvice);
-const paginatedEditorDecoratorListFactory = paginationFactory(compose(List, ListInit))
-	.mixin(compose(Editor, editorInit))
-	.aspect(editorAdvice)
-	.mixin(compose(Decorator, decoratorInit))
-	.aspect(decoratorAdvice);
+const listFactory = listBase();
+const paginatedListFactory = paginationFactory(listBase());
+const EditorList = editorFactory(listBase());
+const paginatedEditorDecoratorListFactory = decoratorFactory(editorFactory(paginationFactory(listBase())));
 
 const data: { [ index: string ]: string }[] = [
 	{ first: 'Bob', last: 'The Builder' },
