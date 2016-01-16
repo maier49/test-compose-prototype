@@ -1,5 +1,5 @@
 import { List, ListInit } from './List';
-import { Pagination, paginationAdvice, paginationInit } from './Pagination';
+import { paginationFactory } from './Pagination';
 import { Editor, editorInit, editorAdvice } from './Editor';
 import { Decorator, decoratorInit, decoratorAdvice } from './Decorator';
 import compose from 'dojo-compose/compose';
@@ -11,11 +11,9 @@ const columns: {name: string, field: string}[] = [
 ];
 
 const listFactory = compose(List, ListInit);
-const paginatedListFactory = compose(List, ListInit).mixin(compose(Pagination, paginationInit)).aspect(paginationAdvice);
+const paginatedListFactory = paginationFactory(compose(List, ListInit));
 const EditorList = compose(List, ListInit).mixin(compose(Editor, editorInit)).aspect(editorAdvice);
-const paginatedEditorDecoratorListFactory = compose(List, ListInit)
-	.mixin(compose(Pagination, paginationInit))
-	.aspect(paginationAdvice)
+const paginatedEditorDecoratorListFactory = paginationFactory(compose(List, ListInit))
 	.mixin(compose(Editor, editorInit))
 	.aspect(editorAdvice)
 	.mixin(compose(Decorator, decoratorInit))

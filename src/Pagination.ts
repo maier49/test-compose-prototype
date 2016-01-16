@@ -1,4 +1,5 @@
-import { AspectAdvice } from 'dojo-compose/compose';
+import compose, { AspectAdvice, ComposeFactory } from 'dojo-compose/compose';
+
 export class Pagination {
 	rowsPerPage: number;
 	pageNumber: number;
@@ -52,4 +53,8 @@ export const paginationAdvice: AspectAdvice = {
 export function paginationInit(options: { [index: string ]: any }) {
 	this.rowsPerPage = options['rowsPerPage'];
 	this.pageNumber = options['pageNumber']
+}
+
+export function paginationFactory<O, A>(factory: ComposeFactory<O, A>): ComposeFactory<O, A & Pagination> {
+	return compose.mixin(factory, compose(Pagination, paginationInit)).aspect(paginationAdvice)
 }

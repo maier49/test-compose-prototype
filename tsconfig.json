@@ -16,6 +16,7 @@
 		"./_modules/**/*.d.ts"
 	],
 	"files": [
+		"./src/Decorator.ts",
 		"./src/Editor.ts",
 		"./src/List.ts",
 		"./src/Pagination.ts",
