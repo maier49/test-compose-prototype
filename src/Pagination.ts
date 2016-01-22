@@ -34,11 +34,11 @@ export const paginationAdvice: AspectAdvice = {
 				previousButton.textContent = 'Previous';
 
 				nextButton.onclick = function () {
-					this.gotoPage(this.pageNumber + 1)
+					this.gotoPage(this.pageNumber + 1);
 				}.bind(this);
 
 				previousButton.onclick = function () {
-					this.gotoPage(this.pageNumber - 1)
+					this.gotoPage(this.pageNumber - 1);
 				}.bind(this);
 
 				paginationNode.appendChild(previousButton);
@@ -52,9 +52,9 @@ export const paginationAdvice: AspectAdvice = {
 
 export function paginationInit(options: { [index: string ]: any }) {
 	this.rowsPerPage = options['rowsPerPage'];
-	this.pageNumber = options['pageNumber']
+	this.pageNumber = options['pageNumber'];
 }
 
 export function paginationFactory<O, A>(factory: ComposeFactory<O, A>): ComposeFactory<O, A & Pagination> {
-	return compose.mixin(factory, compose(Pagination, paginationInit)).aspect(paginationAdvice)
+	return compose.mixin(factory, compose(Pagination, paginationInit)).aspect(paginationAdvice);
 }

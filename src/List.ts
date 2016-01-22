@@ -13,7 +13,7 @@ export class List {
 		this.gridNode.appendChild(this.renderHeader());
 		data.forEach(function (item: { [index: string ]: string }) {
 			this.gridNode.appendChild(this.renderRow(item));
-		}.bind(this));
+		}, this);
 	}
 
 	renderHeader() {
@@ -47,7 +47,6 @@ export function listInit(options: { [ index: string ]: any }) {
 	this.gridNode = table;
 	this.columns = options['columns'] || {};
 };
-
 
 export function listBase() {
 	return compose(List, listInit);
