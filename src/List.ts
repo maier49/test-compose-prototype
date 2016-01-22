@@ -1,4 +1,3 @@
-import compose, { ComposeFactory } from 'dojo-compose/compose';
 export class List {
 	domNode: Node;
 	gridNode: Node;
@@ -38,17 +37,17 @@ export class List {
 
 		return row;
 	}
-};
+}
 
-export function listInit(options: { [ index: string ]: any }) {
+function ListInit(options: { [ index: string ]: any }) {
 	this.domNode = options[ 'domNode' ] || document.createElement('div');
 	const table = document.createElement('table');
 	this.domNode.appendChild(table);
 	this.gridNode = table;
 	this.columns = options['columns'] || {};
-};
+}
 
-
-export function listBase() {
-	return compose(List, listInit);
+export const list = {
+	base: List,
+	initializer: ListInit
 };
