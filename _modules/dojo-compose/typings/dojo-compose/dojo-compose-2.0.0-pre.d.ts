@@ -51,14 +51,6 @@ declare module 'dojo-compose/compose' {
 	export interface Compose {
 	    extend<O, A, B>(base: ComposeFactory<O, A>, extension: B): ComposeFactory<O, A & B>;
 	}
-	export interface ComposeFactory<O, T> {
-	    mixin<P, U>(mixin: GenericClass<U>): ComposeFactory<O, T & U>;
-	    mixin<P, U>(mixin: ComposeFactory<P, U>): ComposeFactory<O & P, T & U>;
-	}
-	export interface Compose {
-	    mixin<O, A, B>(base: ComposeFactory<O, A>, mixin: GenericClass<B>): ComposeFactory<O, A & B>;
-	    mixin<O, P, A, B>(base: ComposeFactory<O, A>, mixin: ComposeFactory<P, B>): ComposeFactory<O & P, A & B>;
-	}
 	export interface OverlayFunction<T> {
 	    (proto: T): void;
 	}
@@ -78,6 +70,24 @@ declare module 'dojo-compose/compose' {
 	    around?: {
 	        [method: string]: AroundAdvice<any>;
 	    };
+	}
+	export interface ComposeClassMixin<O, P> {
+	    base?: GenericClass<O>;
+	    initializer?: ComposeInitializationFunction<P>;
+	    aspectAdvice?: AspectAdvice;
+	}
+	export interface ComposeFactoryMixin<O, P, T> {
+	    base?: ComposeFactory<O, T>;
+	    initializer?: ComposeInitializationFunction<P>;
+	    aspectAdvice?: AspectAdvice;
+	}
+	export interface ComposeFactory<O, T> {
+	    mixin<P, U, V>(mixin: ComposeClassMixin<U, V>): ComposeFactory<O, T & U>;
+	    mixin<P, U, V>(mixin: ComposeFactoryMixin<P, V, U>): ComposeFactory<O & P, T & U>;
+	}
+	export interface Compose {
+	    mixin<O, A, B, C>(base: ComposeFactory<O, A>, mixin: ComposeClassMixin<B, C>): ComposeFactory<O, A & B>;
+	    mixin<O, P, A, B, C>(base: ComposeFactory<O, A>, mixin: ComposeFactoryMixin<P, C, B>): ComposeFactory<O & P, A & B>;
 	}
 	export interface GenericFunction<T> {
 	    (...args: any[]): T;

@@ -1,9 +1,9 @@
-import compose, { AspectAdvice, ComposeFactory } from 'dojo-compose/compose';
+import { AspectAdvice } from 'dojo-compose/compose';
 export class Editor {
 	editableFields: string[]
 };
 
-export const editorAdvice: AspectAdvice = {
+const editorAdvice: AspectAdvice = {
 	'around': {
 		renderRow: function (inherited: (item: { [ index: string ]: string }) => Node): (item: { [index: string ]: string }) => Node {
 			return function (item: { [index: string ]: string }) {
@@ -27,10 +27,12 @@ export const editorAdvice: AspectAdvice = {
 	}
 };
 
-export function editorInit(options: { [ index: string ]: any }) {
+function editorInit(options: { [ index: string ]: any }) {
 	this.editableFields = options['editableFields']
 }
 
-export function editorFactory<O, A>(factory: ComposeFactory<O, A>): ComposeFactory<O, A & Editor> {
-	return compose.mixin(factory, compose(Editor, editorInit)).aspect(editorAdvice)
-}
+export const editor = {
+	base: Editor,
+	initializer: editorInit,
+	aspectAdvice: editorAdvice
+};

@@ -1,10 +1,10 @@
-import compose, { AspectAdvice, ComposeFactory } from 'dojo-compose/compose';
+import { AspectAdvice } from 'dojo-compose/compose';
 export class Decorator {
 	color: string;
 	fieldsToDecorate: string[];
 }
 
-export const decoratorAdvice: AspectAdvice = {
+const decoratorAdvice: AspectAdvice = {
 	'after': {
 		renderRow: function (row: Node, ...args: any[]): Node {
 			this.fieldsToDecorate.forEach(function (field: string) {
@@ -19,11 +19,13 @@ export const decoratorAdvice: AspectAdvice = {
 	}
 };
 
-export function decoratorInit(options: { [ index: string ]: any }) {
+function decoratorInit(options: { [ index: string ]: any }) {
 	this.color = options['color'];
 	this.fieldsToDecorate = options['fieldsToDecorate'];
 }
 
-export function decoratorFactory<O, A>(factory: ComposeFactory<O, A>): ComposeFactory<O, A & Decorator> {
-	return compose.mixin(factory, compose(Decorator, decoratorInit)).aspect(decoratorAdvice)
-}
+export const decorator = {
+	base: Decorator,
+	initializer: decoratorInit,
+	aspectAdvice: decoratorAdvice
+};

@@ -95,7 +95,7 @@
         /* making sure only unique functions get added */
         initFnMap.get(source).forEach(function (item) {
             if (initFn.indexOf(item) < 0) {
-                initFn.unshift(item);
+                initFn.push(item);
             }
         });
     }
@@ -113,17 +113,27 @@
         copyProperties(base.prototype, extension);
         return base;
     }
-    function mixin(base, mixin) {
-        base = cloneFactory(base);
-        if (isComposeFactory(mixin)) {
-            concatInitFn(base, mixin);
-        }
-        copyProperties(base.prototype, mixin.prototype);
-        return base;
-    }
     function overlay(base, overlayFunction) {
         base = cloneFactory(base);
         overlayFunction(base.prototype);
+        return base;
+    }
+    function mixin(base, mixin) {
+        base = cloneFactory(base);
+        if (mixin.base) {
+            var mixinFactory = isComposeFactory(mixin.base) ? mixin.base : create(mixin.base);
+            if (mixin.initializer) {
+                initFnMap.get(mixinFactory).push(mixin.initializer);
+            }
+            concatInitFn(base, mixinFactory);
+            copyProperties(base.prototype, mixinFactory.prototype);
+        }
+        else if (mixin.initializer) {
+            base = create(base, mixin.initializer);
+        }
+        if (mixin.aspectAdvice) {
+            base = aspect(base, mixin.aspectAdvice);
+        }
         return base;
     }
     function from(base, method) {
