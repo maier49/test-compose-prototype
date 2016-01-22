@@ -226,6 +226,7 @@ module.exports = function (grunt) {
 			src: {
 				src: [
 					'<%= all %>',
+					'!_modules/**/*.ts',
 					'!typings/**/*.ts',
 					'!tests/typings/**/*.ts'
 				]

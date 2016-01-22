@@ -1,6 +1,6 @@
 import { AspectAdvice } from 'dojo-compose/compose';
 export class Editor {
-	editableFields: string[]
+	editableFields: string[];
 };
 
 const editorAdvice: AspectAdvice = {
@@ -17,8 +17,7 @@ const editorAdvice: AspectAdvice = {
 
 					newCell.value = cell.textContent;
 
-					row.replaceChild(newCell, cell)
-
+					row.replaceChild(newCell, cell);
 				});
 
 				return row;
@@ -28,7 +27,7 @@ const editorAdvice: AspectAdvice = {
 };
 
 function editorInit(options: { [ index: string ]: any }) {
-	this.editableFields = options['editableFields']
+	this.editableFields = options['editableFields'];
 }
 
 export const editor = {

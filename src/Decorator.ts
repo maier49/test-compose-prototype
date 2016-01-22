@@ -11,8 +11,8 @@ const decoratorAdvice: AspectAdvice = {
 				Array.prototype.forEach.call((<any> row).querySelectorAll('.field-' + field),
 					function (cell: HTMLElement) {
 						cell.style.color = this.color;
-					}.bind(this));
-			}.bind(this));
+					}, this);
+			}, this);
 
 			return row;
 		}

@@ -33,11 +33,11 @@ const paginationAdvice: AspectAdvice = {
 				previousButton.textContent = 'Previous';
 
 				nextButton.onclick = function () {
-					this.gotoPage(this.pageNumber + 1)
+					this.gotoPage(this.pageNumber + 1);
 				}.bind(this);
 
 				previousButton.onclick = function () {
-					this.gotoPage(this.pageNumber - 1)
+					this.gotoPage(this.pageNumber - 1);
 				}.bind(this);
 
 				paginationNode.appendChild(previousButton);
@@ -51,7 +51,7 @@ const paginationAdvice: AspectAdvice = {
 
 function paginationInit(options: { [index: string ]: any }) {
 	this.rowsPerPage = options['rowsPerPage'];
-	this.pageNumber = options['pageNumber']
+	this.pageNumber = options['pageNumber'];
 }
 
 export const pagination = {

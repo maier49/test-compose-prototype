@@ -12,7 +12,7 @@ export class List {
 		this.gridNode.appendChild(this.renderHeader());
 		data.forEach(function (item: { [index: string ]: string }) {
 			this.gridNode.appendChild(this.renderRow(item));
-		}.bind(this));
+		}, this);
 	}
 
 	renderHeader() {
