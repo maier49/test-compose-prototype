@@ -3,12 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
+	<style>
+		.selected {
+			background-color: rgba(30, 144, 255, .5);
+		}
+		.selected-cell {
+			background-color: rgba(255, 0, 0, .3);
+		}
+	</style>
 </head>
 <body>
 	<div id="grid"></div>
 	<div id="paginated"></div>
 	<div id="editor"></div>
 	<div id="combo"></div>
+	<div id="cellSelection"></div>
 	<script src="./require.js"></script>
 	<script>
 		require.config({

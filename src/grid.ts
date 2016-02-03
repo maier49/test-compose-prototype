@@ -1,6 +1,17 @@
-export class List {
-	domNode: Node;
-	gridNode: Node;
+export interface Row {
+	element?: Element,
+	data?: {}
+}
+
+export interface Cell {
+	element?: Element,
+	row?: Row,
+	column: {}
+}
+
+export class Grid {
+	domNode: Element;
+	gridNode: Element;
 	columns: { name: string, field: string }[];
 
 	render(data: { [ index: string ]: string }[]): void {
@@ -26,7 +37,7 @@ export class List {
 		return header;
 	}
 
-	renderRow(item: { [index: string]: string }) {
+	renderRow(item: { [ index: string ]: string }) {
 		let row = document.createElement('tr');
 		this.columns.forEach(function (column: { name: string, field: string }) {
 			let td = document.createElement('td');
@@ -35,11 +46,21 @@ export class List {
 			row.appendChild(td);
 		});
 
+		row.classList.add('row');
+
 		return row;
+	}
+
+	row(target: { id?: string } | string | number): Row {
+		if (typeof target === 'string') {
+			return this.domNode.querySelector('#' + target);
+		} else if (typeof target === 'number') {
+			return this.domNode.querySelectorAll('.row')[target];
+		}
 	}
 }
 
-function ListInit(options: { [ index: string ]: any }) {
+function gridInit(options: { [ index: string ]: any }) {
 	this.domNode = options[ 'domNode' ] || document.createElement('div');
 	const table = document.createElement('table');
 	this.domNode.appendChild(table);
@@ -47,7 +68,7 @@ function ListInit(options: { [ index: string ]: any }) {
 	this.columns = options['columns'] || {};
 }
 
-export const list = {
-	base: List,
-	initializer: ListInit
+export const grid = {
+	base: Grid,
+	initializer: gridInit
 };

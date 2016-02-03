@@ -1,7 +1,9 @@
-import { list } from './List';
-import { pagination } from './Pagination';
-import { editor } from './Editor';
-import { decorator } from './Decorator';
+import { grid, Row } from './grid';
+import { pagination } from './pagination';
+import { editor } from './editor';
+import { decorator } from './decorator';
+import Selection from './Selection';
+import { cellSelection } from './cellSelection';
 import compose from 'dojo-compose/compose';
 import { before } from 'dojo-compose/aspect';
 
@@ -10,13 +12,15 @@ const columns: {name: string, field: string}[] = [
 	{ name: 'Last Name', field: 'last' }
 ];
 
-const listFactory = compose({}).mixin(list);
-const paginatedListFactory = listFactory.mixin(pagination);
-const editorFactory = listFactory.mixin(editor);
-const paginatedEditorDecoratorListFactory = listFactory
+const gridFactory = compose(grid.base, grid.initializer);
+const selectionGridFactory = gridFactory.mixin({ base: Selection });
+const paginatedGridFactory = gridFactory.mixin(pagination);
+const editorFactory = gridFactory.mixin(editor);
+const paginatedEditorDecoratorGridFactory = gridFactory
 	.mixin(pagination)
 	.mixin(editor)
 	.mixin(decorator);
+const cellSelectionFactory = gridFactory.mixin(cellSelection);
 
 const data: { [ index: string ]: string }[] = [
 	{ first: 'Bob', last: 'The Builder' },
@@ -24,25 +28,26 @@ const data: { [ index: string ]: string }[] = [
 	{ first: 'Tom', last: 'Hanks' }
 ];
 
-const basicList = listFactory({domNode: document.body.querySelector('#grid'), columns: columns });
-basicList.render(data);
+const basicGrid = selectionGridFactory({domNode: document.body.querySelector('#grid'), columns: columns });
+basicGrid.render(data);
+basicGrid.select(0);
 
-const paginatedList = paginatedListFactory({
+const paginatedGrid = paginatedGridFactory({
 	rowsPerPage: 1,
 	pageNumber: 1,
 	domNode: document.body.querySelector('#paginated'),
 	columns: columns
 });
-paginatedList.render(data);
+paginatedGrid.render(data);
 
-const editorList = editorFactory({
+const editorGrid = editorFactory({
 	editableFields: [ 'first' ],
 	columns: columns,
 	domNode: document.body.querySelector('#editor')
 });
-editorList.render(data);
+editorGrid.render(data);
 
-const mixedList = paginatedEditorDecoratorListFactory({
+const mixedGrid = paginatedEditorDecoratorGridFactory({
 	editableFields: [ 'first' ],
 	columns: columns,
 	domNode: document.body.querySelector('#combo'),
@@ -51,5 +56,14 @@ const mixedList = paginatedEditorDecoratorListFactory({
 	fieldsToDecorate: [ 'last' ],
 	color: 'red'
 });
+mixedGrid.render(data);
 
-mixedList.render(data);
+const cellSelectionGrid = cellSelectionFactory({domNode: document.body.querySelector('#cellSelection'), columns: columns});
+cellSelectionGrid.render(data);
+const row: Row = {
+	element: cellSelectionGrid.domNode.querySelector('.row')
+};
+cellSelectionGrid.select(0);
+cellSelectionGrid.select(row);
+
+
