@@ -19,9 +19,9 @@ const decoratorAdvice: AspectAdvice = {
 	}
 };
 
-function decoratorInit(options: { [ index: string ]: any }) {
-	this.color = options['color'];
-	this.fieldsToDecorate = options['fieldsToDecorate'];
+function decoratorInit(grid: Decorator, options: { [ index: string ]: any }) {
+	grid.color = options['color'];
+	grid.fieldsToDecorate = options['fieldsToDecorate'];
 }
 
 export const decorator = {

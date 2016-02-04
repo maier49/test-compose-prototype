@@ -60,12 +60,12 @@ export class Grid {
 	}
 }
 
-function gridInit(options: { [ index: string ]: any }) {
-	this.domNode = options[ 'domNode' ] || document.createElement('div');
+function gridInit(grid: Grid, options: { [ index: string ]: any }) {
+	grid.domNode = options[ 'domNode' ] || document.createElement('div');
 	const table = document.createElement('table');
-	this.domNode.appendChild(table);
-	this.gridNode = table;
-	this.columns = options['columns'] || {};
+	grid.domNode.appendChild(table);
+	grid.gridNode = table;
+	grid.columns = options['columns'] || [{}];
 }
 
 export const grid = {

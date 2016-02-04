@@ -49,9 +49,9 @@ const paginationAdvice: AspectAdvice = {
 	}
 };
 
-function paginationInit(options: { [index: string ]: any }) {
-	this.rowsPerPage = options['rowsPerPage'];
-	this.pageNumber = options['pageNumber'];
+function paginationInit(grid: Pagination, options: { [index: string ]: any }) {
+	grid.rowsPerPage = options['rowsPerPage'];
+	grid.pageNumber = options['pageNumber'];
 }
 
 export const pagination = {

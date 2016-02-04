@@ -2,7 +2,7 @@ import { grid, Row } from './grid';
 import { pagination } from './pagination';
 import { editor } from './editor';
 import { decorator } from './decorator';
-import Selection from './Selection';
+import selection from './selection';
 import { cellSelection } from './cellSelection';
 import compose from 'dojo-compose/compose';
 import { before } from 'dojo-compose/aspect';
@@ -13,14 +13,14 @@ const columns: {name: string, field: string}[] = [
 ];
 
 const gridFactory = compose(grid.base, grid.initializer);
-const selectionGridFactory = gridFactory.mixin({ base: Selection });
+const selectionGridFactory = gridFactory.extend(selection);
 const paginatedGridFactory = gridFactory.mixin(pagination);
 const editorFactory = gridFactory.mixin(editor);
 const paginatedEditorDecoratorGridFactory = gridFactory
 	.mixin(pagination)
 	.mixin(editor)
 	.mixin(decorator);
-const cellSelectionFactory = gridFactory.mixin(cellSelection);
+const cellSelectionFactory = gridFactory.extend(cellSelection);
 
 const data: { [ index: string ]: string }[] = [
 	{ first: 'Bob', last: 'The Builder' },
@@ -64,6 +64,7 @@ const row: Row = {
 	element: cellSelectionGrid.domNode.querySelector('.row')
 };
 cellSelectionGrid.select(0);
-cellSelectionGrid.select(row);
+// This line now, correctly, doesn't compile
+//cellSelectionGrid.select(row);
 
 

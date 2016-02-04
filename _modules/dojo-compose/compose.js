@@ -70,7 +70,8 @@
                 throw new SyntaxError('Factories cannot be called with "new".');
             }
             var instance = Object.create(factory.prototype);
-            initFnMap.get(factory).forEach(function (fn) { return fn.apply(instance, args); });
+            args.unshift(instance);
+            initFnMap.get(factory).forEach(function (fn) { return fn.apply(null, args); });
             return instance;
         }
         if (base) {

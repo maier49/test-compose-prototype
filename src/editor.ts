@@ -26,8 +26,8 @@ const editorAdvice: AspectAdvice = {
 	}
 };
 
-function editorInit(options: { [ index: string ]: any }) {
-	this.editableFields = options['editableFields'];
+function editorInit(grid: Editor, options: { [ index: string ]: any }) {
+	grid.editableFields = options['editableFields'];
 }
 
 export const editor = {
