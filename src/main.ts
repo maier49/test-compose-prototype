@@ -1,19 +1,29 @@
-import { grid, Row } from './grid';
+import { grid, Row, Grid, Store, ColumnDef } from './grid';
 import { pagination } from './pagination';
 import { editor } from './editor';
 import { decorator } from './decorator';
-import selection from './selection';
+import selection, { Selection } from './selection';
 import { cellSelection } from './cellSelection';
 import compose from 'dojo-compose/compose';
 import { before } from 'dojo-compose/aspect';
 
-const columns: {name: string, field: string}[] = [
-	{ name: 'First Name', field: 'first' },
+const columns: ColumnDef<{ first: string, last: string }>[] = [
+	{
+		name: 'First Name',
+		field: 'first',
+		renderCell: function(item: { first: string, last: string }) {
+			return <Element> null;
+		}
+	},
 	{ name: 'Last Name', field: 'last' }
 ];
 
+interface GenericGridSelectionFactory {
+	<T>(options: any): Grid<T>&Selection;
+}
+
 const gridFactory = compose(grid.base, grid.initializer);
-const selectionGridFactory = gridFactory.extend(selection);
+const selectionGridFactory: GenericGridSelectionFactory = gridFactory.extend(selection);
 const paginatedGridFactory = gridFactory.mixin(pagination);
 const editorFactory = gridFactory.mixin(editor);
 const paginatedEditorDecoratorGridFactory = gridFactory
@@ -22,13 +32,13 @@ const paginatedEditorDecoratorGridFactory = gridFactory
 	.mixin(decorator);
 const cellSelectionFactory = gridFactory.extend(cellSelection);
 
-const data: { [ index: string ]: string }[] = [
+const data: {first: string, last: string }[] = [
 	{ first: 'Bob', last: 'The Builder' },
 	{ first: 'Homer', last: 'Simpson' },
 	{ first: 'Tom', last: 'Hanks' }
 ];
 
-const basicGrid = selectionGridFactory({domNode: document.body.querySelector('#grid'), columns: columns });
+const basicGrid = selectionGridFactory<{ first: string, last: string }>({domNode: document.body.querySelector('#grid'), columns: columns });
 basicGrid.render(data);
 basicGrid.select(0);
 

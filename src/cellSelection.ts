@@ -6,12 +6,12 @@ function isCell(object: any): object is Cell {
 	return typeof object === 'object' && 'row' in object;
 }
 
-export interface CellSelection {
-	select(cell: string | number | Cell, toCell?: number, value?: boolean): void;
+export abstract class CellSelection {
+	abstract select(cell: string | number | Cell, toCell?: number, value?: boolean): void;
+	protected abstract _selectHelper(cell: string): void;
 }
 
 const _cellSelection = {
-	//select(row: string | number | Row, toRow?: number, value?: boolean): void;
 	select: function (cell: string | number | Cell /*| Row */, toCell?: number, value?: boolean) {
 		if (isRow(cell)) {
 			return;
@@ -33,7 +33,6 @@ const _cellSelection = {
 		);
 	},
 
-	//isSelected(object: Row, columnId?: string): boolean ;
 	isSelected: function(object: Cell | Element | Event /*| Row */, columnId?: string) {
 		// summary:
 		//		Returns true if the indicated row is selected.
