@@ -15,7 +15,7 @@ const selection = {
 	select: function (row: string | number | Row, toRow?: number, value?: boolean) {
 		let rowDomNodes: Element[] = [];
 		if (isRow(row)) {
-			rowDomNodes.push((<Row> row).element);
+			rowDomNodes.push(row.element);
 		} else if (typeof row === 'string') {
 			rowDomNodes.push(this.row(row).element);
 		} else {
@@ -38,12 +38,12 @@ const selection = {
 			return false;
 		}
 
-		if (!isRow(object) || (isRow(object) && !(<Row> object).element)) {
+		if (!isRow(object) || (isRow(object) && !object.element)) {
 			object = this.row(object);
 		}
 
 		if (isRow(object)) {
-			return object && (<Row> object).element && (<Row> object).element.classList.contains('row');
+			return object && object.element && object.element.classList.contains('row');
 		}
 	}
 

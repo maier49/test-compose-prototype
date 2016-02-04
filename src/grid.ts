@@ -7,7 +7,7 @@ import compose, {
 	GenericClass
 } from 'dojo-compose/compose';
 export interface Row {
-	element?: Element,
+	element: Element,
 	data?: {}
 }
 
@@ -91,9 +91,9 @@ export class Grid<T> {
 
 	row(target: { id?: string } | string | number): Row {
 		if (typeof target === 'string') {
-			return this.domNode.querySelector('#' + target);
+			return { element: this.domNode.querySelector('#' + target) };
 		} else if (typeof target === 'number') {
-			return this.domNode.querySelectorAll('.row')[target];
+			return { element: this.domNode.querySelectorAll('.row')[target] };
 		}
 	}
 }
