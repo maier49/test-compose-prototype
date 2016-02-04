@@ -1,4 +1,4 @@
-import { grid, Row, Grid, Store, ColumnDef } from './grid';
+import { gridFactory, Row, Grid, Store, ColumnDef, GridOptions, GridFactory } from './grid';
 import { pagination } from './pagination';
 import { editor } from './editor';
 import { decorator } from './decorator';
@@ -7,7 +7,7 @@ import { cellSelection } from './cellSelection';
 import compose from 'dojo-compose/compose';
 import { before } from 'dojo-compose/aspect';
 
-const columns: ColumnDef<{ first: string, last: string }>[] = [
+const columns = [
 	{
 		name: 'First Name',
 		field: 'first',
@@ -18,12 +18,11 @@ const columns: ColumnDef<{ first: string, last: string }>[] = [
 	{ name: 'Last Name', field: 'last' }
 ];
 
-interface GenericGridSelectionFactory {
-	<T>(options: any): Grid<T>&Selection;
-}
+const store: Store<{ first: string, last: string }> = {
+	data: []
+};
 
-const gridFactory = compose(grid.base, grid.initializer);
-const selectionGridFactory: GenericGridSelectionFactory = gridFactory.extend(selection);
+const selectionGridFactory = gridFactory.mixin({ base: selection });
 const paginatedGridFactory = gridFactory.mixin(pagination);
 const editorFactory = gridFactory.mixin(editor);
 const paginatedEditorDecoratorGridFactory = gridFactory
@@ -32,13 +31,24 @@ const paginatedEditorDecoratorGridFactory = gridFactory
 	.mixin(decorator);
 const cellSelectionFactory = gridFactory.extend(cellSelection);
 
-const data: {first: string, last: string }[] = [
+// Switch data declarations to see compilation failure because the type of data
+// doesn't match the type of the grid inferred from the store argument.
+const data = [
 	{ first: 'Bob', last: 'The Builder' },
 	{ first: 'Homer', last: 'Simpson' },
 	{ first: 'Tom', last: 'Hanks' }
 ];
 
-const basicGrid = selectionGridFactory<{ first: string, last: string }>({domNode: document.body.querySelector('#grid'), columns: columns });
+//const data = [
+//	{ first: 'Bob'},
+//	{ first: 'Homer'},
+//	{ first: 'Tom'},
+//];
+
+const basicGrid = selectionGridFactory({
+	domNode: document.body.querySelector('#grid'),
+	columns: columns,
+	store: store});
 basicGrid.render(data);
 basicGrid.select(0);
 

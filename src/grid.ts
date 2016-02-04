@@ -1,4 +1,11 @@
-import { ComposeFactory } from 'dojo-compose/compose';
+import compose, {
+	ComposeFactory,
+	ComposeObjectMixin,
+	ComposeClassMixin,
+	ComposeFactoryMixin,
+	ComposeInitializationFunction,
+	GenericClass
+} from 'dojo-compose/compose';
 export interface Row {
 	element?: Element,
 	data?: {}
@@ -18,6 +25,26 @@ export interface ColumnDef<T> {
 	name: string,
 	field: string,
 	renderCell?: (item: T) => Element
+}
+export interface GridOptions<T> {
+	[ index: string ]: any,
+	columns?: ColumnDef<T>[],
+	store?: Store<T>
+}
+
+export interface BaseGridFactory<O> {
+	<P>(options?: GridOptions<P>): Grid<P>;
+	mixin<U, V>(mixin: ComposeClassMixin<V, U>): GridFactory<O, U>;
+	mixin<P, U, V>(mixin: ComposeFactoryMixin<V, U, P>): GridFactory<O, U>;
+	mixin<U, V>(mixin: ComposeObjectMixin<V, U>): GridFactory<O, U>;
+	extend<U>(extension: U): GridFactory<O, U>;
+}
+export interface GridFactory<O, T> extends ComposeFactory<O,T> {
+	<P>(options?: GridOptions<P>): Grid<P> & T;
+	mixin<U, V>(mixin: ComposeClassMixin<V, U>): GridFactory<O, T & U>;
+	mixin<P, U, V>(mixin: ComposeFactoryMixin<V, U, P>): GridFactory<O & P, T & U>;
+	mixin<U, V>(mixin: ComposeObjectMixin<V, U>): GridFactory<O, T & U>;
+	extend<U>(extension: U): GridFactory<O, T & U>;
 }
 
 export class Grid<T> {
@@ -71,11 +98,7 @@ export class Grid<T> {
 	}
 }
 
-function gridInit<T>(grid: Grid<T>, options: {
-	[ index: string ]: any,
-	columns?: ColumnDef<T>[],
-	store?: Store<T>
-}) {
+function gridInit<T>(grid: Grid<T>, options: GridOptions<T>) {
 	grid.domNode = options[ 'domNode' ] || document.createElement('div');
 	const table = document.createElement('table');
 	grid.domNode.appendChild(table);
@@ -83,7 +106,4 @@ function gridInit<T>(grid: Grid<T>, options: {
 	grid.columns = options.columns || [];
 }
 
-export const grid = {
-	base: Grid,
-	initializer: gridInit
-};
+export const gridFactory: BaseGridFactory<GridOptions<any>> = compose(Grid, gridInit);
