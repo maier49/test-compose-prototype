@@ -1,8 +1,6 @@
 import compose, {
 	ComposeFactory,
-	ComposeObjectMixin,
-	ComposeClassMixin,
-	ComposeFactoryMixin,
+	ComposeMixin,
 	ComposeInitializationFunction,
 	GenericClass
 } from 'dojo-compose/compose';
@@ -34,16 +32,32 @@ export interface GridOptions<T> {
 
 export interface BaseGridFactory<O> {
 	<P>(options?: GridOptions<P>): Grid<P>;
-	mixin<U, V>(mixin: ComposeClassMixin<V, U>): GridFactory<O, U>;
-	mixin<P, U, V>(mixin: ComposeFactoryMixin<V, U, P>): GridFactory<O, U>;
-	mixin<U, V>(mixin: ComposeObjectMixin<V, U>): GridFactory<O, U>;
+	mixin<P, U, V>(mixin: ComposeMixin<V, U, P>): GridFactory<O & P, U>;
+	// These are overloads for passing multiple mixins simultaneously
+	mixin<P, U, V, A, B, C>(
+		mixin: ComposeMixin<V, U, P>,
+		secondMixin: ComposeMixin<A, B, C>
+	): GridFactory<O & P & C, U & B>;
+	mixin<P, U, V, A, B, C, D, E, F>(
+		mixin: ComposeMixin<V, U, P>,
+		secondMixin: ComposeMixin<A, B, C>,
+		thirdMixin: ComposeMixin<D, E, F>
+	): GridFactory<O & P & C & F, U & B & E>;
 	extend<U>(extension: U): GridFactory<O, U>;
 }
 export interface GridFactory<O, T> extends ComposeFactory<O,T> {
 	<P>(options?: GridOptions<P>): Grid<P> & T;
-	mixin<U, V>(mixin: ComposeClassMixin<V, U>): GridFactory<O, T & U>;
-	mixin<P, U, V>(mixin: ComposeFactoryMixin<V, U, P>): GridFactory<O & P, T & U>;
-	mixin<U, V>(mixin: ComposeObjectMixin<V, U>): GridFactory<O, T & U>;
+	mixin<P, U, V>(mixin: ComposeMixin<V, U, P>): GridFactory<O & P, T & U>;
+	// These are overloads for passing multiple mixins simultaneously
+	mixin<P, U, V, A, B, C>(
+		mixin: ComposeMixin<V, U, P>,
+		secondMixin: ComposeMixin<A, B, C>
+	): GridFactory<O & P & C, T & U & B>;
+	mixin<P, U, V, A, B, C, D, E, F>(
+		mixin: ComposeMixin<V, U, P>,
+		secondMixin: ComposeMixin<A, B, C>,
+		thirdMixin: ComposeMixin<D, E, F>
+	): GridFactory<O & P & C & F, T & U & B & E>;
 	extend<U>(extension: U): GridFactory<O, T & U>;
 }
 

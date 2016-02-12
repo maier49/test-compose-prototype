@@ -119,23 +119,30 @@
         overlayFunction(base.prototype);
         return base;
     }
-    function mixin(base, mixin) {
+    function mixin(base, firstMixin, secondMixin, thirdMixin, fourthMixin, fifthMixin, sixthMixin, seventhMixin) {
         base = cloneFactory(base);
-        if (mixin.base) {
-            var mixinFactory = isComposeFactory(mixin.base) ? mixin.base : create(mixin.base);
-            if (mixin.initializer) {
-                initFnMap.get(mixinFactory).push(mixin.initializer);
+        if (firstMixin.base) {
+            var mixinFactory = isComposeFactory(firstMixin.base) ? firstMixin.base : create(firstMixin.base);
+            if (firstMixin.initializer) {
+                initFnMap.get(mixinFactory).push(firstMixin.initializer);
             }
             concatInitFn(base, mixinFactory);
             copyProperties(base.prototype, mixinFactory.prototype);
         }
-        else if (mixin.initializer) {
-            base = create(base, mixin.initializer);
+        else if (firstMixin.initializer) {
+            base = create(base, firstMixin.initializer);
         }
-        if (mixin.aspectAdvice) {
-            base = aspect(base, mixin.aspectAdvice);
+        if (firstMixin.aspectAdvice) {
+            base = aspect(base, firstMixin.aspectAdvice);
         }
-        return base;
+        if (secondMixin) {
+            var args = Array.prototype.slice.call(arguments, 2);
+            args.unshift(base);
+            return mixin.apply(null, args);
+        }
+        else {
+            return base;
+        }
     }
     function from(base, method) {
         return base.prototype[method];

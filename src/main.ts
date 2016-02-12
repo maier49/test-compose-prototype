@@ -25,10 +25,7 @@ const store: Store<{ first: string, last: string }> = {
 const selectionGridFactory = gridFactory.mixin({ base: selection });
 const paginatedGridFactory = gridFactory.mixin(pagination);
 const editorFactory = gridFactory.mixin(editor);
-const paginatedEditorDecoratorGridFactory = gridFactory
-	.mixin(pagination)
-	.mixin(editor)
-	.mixin(decorator);
+const paginatedEditorDecoratorGridFactory = gridFactory.mixin(pagination, editor, decorator);
 const cellSelectionFactory = gridFactory.extend(cellSelection);
 
 // Switch data declarations to see compilation failure because the type of data
