@@ -6,6 +6,7 @@
         define(["require", "exports", 'dojo-core/WeakMap'], factory);
     }
 })(function (require, exports) {
+    "use strict";
     var WeakMap_1 = require('dojo-core/WeakMap');
     (function (AdviceType) {
         AdviceType[AdviceType["Before"] = 0] = "Before";

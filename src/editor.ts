@@ -31,7 +31,7 @@ function editorInit(grid: Editor, options: { [ index: string ]: any }) {
 }
 
 export const editor = {
-	base: Editor,
+	mixin: Editor,
 	initializer: editorInit,
 	aspectAdvice: editorAdvice
 };

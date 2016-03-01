@@ -6,6 +6,7 @@
         define(["require", "exports", 'dojo-core/WeakMap', './aspect'], factory);
     }
 })(function (require, exports) {
+    "use strict";
     var WeakMap_1 = require('dojo-core/WeakMap');
     var aspect_1 = require('./aspect');
     /* A weakmap that will store initialization functions for compose constructors */
@@ -92,13 +93,13 @@
      * @param source The ComposeFactory to copy the init functions from
      */
     function concatInitFn(target, source) {
-        var initFn = initFnMap.get(target);
+        var sourceInitFns = initFnMap.get(source);
         /* making sure only unique functions get added */
-        initFnMap.get(source).forEach(function (item) {
-            if (initFn.indexOf(item) < 0) {
-                initFn.push(item);
-            }
+        var targetInitFns = initFnMap.get(target).filter(function (fn) {
+            return sourceInitFns.indexOf(fn) < 0;
         });
+        /* now prepend the source init functions to the unique init functions for the target */
+        initFnMap.set(target, sourceInitFns.concat(targetInitFns));
     }
     /**
      * A custom type guard that determines if the value is a ComposeFactory
@@ -111,7 +112,7 @@
     exports.isComposeFactory = isComposeFactory;
     function extend(base, extension) {
         base = cloneFactory(base);
-        copyProperties(base.prototype, extension);
+        copyProperties(base.prototype, typeof extension === 'function' ? extension.prototype : extension);
         return base;
     }
     function overlay(base, overlayFunction) {
@@ -119,30 +120,28 @@
         overlayFunction(base.prototype);
         return base;
     }
-    function mixin(base, firstMixin, secondMixin, thirdMixin, fourthMixin, fifthMixin, sixthMixin, seventhMixin) {
+    function mixin(base, mixin) {
         base = cloneFactory(base);
-        if (firstMixin.base) {
-            var mixinFactory = isComposeFactory(firstMixin.base) ? firstMixin.base : create(firstMixin.base);
-            if (firstMixin.initializer) {
-                initFnMap.get(mixinFactory).push(firstMixin.initializer);
+        var baseInitFns = initFnMap.get(base);
+        if (mixin.mixin) {
+            var mixinFactory = isComposeFactory(mixin.mixin) ? mixin.mixin : create(mixin.mixin);
+            if (mixin.initializer) {
+                if (baseInitFns.indexOf(mixin.initializer) < 0) {
+                    baseInitFns.unshift(mixin.initializer);
+                }
             }
             concatInitFn(base, mixinFactory);
             copyProperties(base.prototype, mixinFactory.prototype);
         }
-        else if (firstMixin.initializer) {
-            base = create(base, firstMixin.initializer);
+        else if (mixin.initializer) {
+            if (baseInitFns.indexOf(mixin.initializer) < 0) {
+                baseInitFns.unshift(mixin.initializer);
+            }
         }
-        if (firstMixin.aspectAdvice) {
-            base = aspect(base, firstMixin.aspectAdvice);
+        if (mixin.aspectAdvice) {
+            base = aspect(base, mixin.aspectAdvice);
         }
-        if (secondMixin) {
-            var args = Array.prototype.slice.call(arguments, 2);
-            args.unshift(base);
-            return mixin.apply(null, args);
-        }
-        else {
-            return base;
-        }
+        return base;
     }
     function from(base, method) {
         return base.prototype[method];

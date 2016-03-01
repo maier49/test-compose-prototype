@@ -25,7 +25,7 @@ function decoratorInit(grid: Decorator, options: { [ index: string ]: any }) {
 }
 
 export const decorator = {
-	base: Decorator,
+	mixin: Decorator,
 	initializer: decoratorInit,
 	aspectAdvice: decoratorAdvice
 };

@@ -24,6 +24,7 @@ export interface ColumnDef<T> {
 	field: string,
 	renderCell?: (item: T) => Element
 }
+
 export interface GridOptions<T> {
 	[ index: string ]: any,
 	columns?: ColumnDef<T>[],
@@ -32,33 +33,12 @@ export interface GridOptions<T> {
 
 export interface BaseGridFactory<O> {
 	<P>(options?: GridOptions<P>): Grid<P>;
-	mixin<P, U, V>(mixin: ComposeMixin<V, U, P>): GridFactory<O & P, U>;
-	// These are overloads for passing multiple mixins simultaneously
-	mixin<P, U, V, A, B, C>(
-		mixin: ComposeMixin<V, U, P>,
-		secondMixin: ComposeMixin<A, B, C>
-	): GridFactory<O & P & C, U & B>;
-	mixin<P, U, V, A, B, C, D, E, F>(
-		mixin: ComposeMixin<V, U, P>,
-		secondMixin: ComposeMixin<A, B, C>,
-		thirdMixin: ComposeMixin<D, E, F>
-	): GridFactory<O & P & C & F, U & B & E>;
-	extend<U>(extension: U): GridFactory<O, U>;
+	mixin<P, U, V>(mixin: ComposeMixin<Grid<any>, V, U, P>): GridFactory<O & P, U>;
 }
+
 export interface GridFactory<O, T> extends ComposeFactory<O,T> {
 	<P>(options?: GridOptions<P>): Grid<P> & T;
-	mixin<P, U, V>(mixin: ComposeMixin<V, U, P>): GridFactory<O & P, T & U>;
-	// These are overloads for passing multiple mixins simultaneously
-	mixin<P, U, V, A, B, C>(
-		mixin: ComposeMixin<V, U, P>,
-		secondMixin: ComposeMixin<A, B, C>
-	): GridFactory<O & P & C, T & U & B>;
-	mixin<P, U, V, A, B, C, D, E, F>(
-		mixin: ComposeMixin<V, U, P>,
-		secondMixin: ComposeMixin<A, B, C>,
-		thirdMixin: ComposeMixin<D, E, F>
-	): GridFactory<O & P & C & F, T & U & B & E>;
-	extend<U>(extension: U): GridFactory<O, T & U>;
+	mixin<P, U, V>(mixin: ComposeMixin<Grid<any> & T, V, U, P>): GridFactory<O & P, T & U>;
 }
 
 export class Grid<T> {

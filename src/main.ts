@@ -22,11 +22,14 @@ const store: Store<{ first: string, last: string }> = {
 	data: []
 };
 
-const selectionGridFactory = gridFactory.mixin({ base: selection });
+const selectionGridFactory = gridFactory.mixin({ mixin: selection });
 const paginatedGridFactory = gridFactory.mixin(pagination);
 const editorFactory = gridFactory.mixin(editor);
-const paginatedEditorDecoratorGridFactory = gridFactory.mixin(pagination, editor, decorator);
-const cellSelectionFactory = gridFactory.extend(cellSelection);
+const paginatedEditorDecoratorGridFactory = gridFactory
+	.mixin(pagination)
+	.mixin(editor)
+	.mixin(decorator);
+const cellSelectionFactory = gridFactory.mixin({ mixin: cellSelection });
 
 // Switch data declarations to see compilation failure because the type of data
 // doesn't match the type of the grid inferred from the store argument.

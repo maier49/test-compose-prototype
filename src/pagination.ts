@@ -55,7 +55,7 @@ function paginationInit(grid: Pagination, options: { [index: string ]: any }) {
 }
 
 export const pagination = {
-	base: Pagination,
+	mixin: Pagination,
 	initializer: paginationInit,
 	aspectAdvice: paginationAdvice
 };
