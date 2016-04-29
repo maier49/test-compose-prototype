@@ -1,9 +1,10 @@
-import { gridFactory, Row, Grid, Store, ColumnDef, GridOptions, GridFactory } from './grid';
-import { pagination } from './pagination';
-import { editor } from './editor';
-import { decorator } from './decorator';
-import selection, { Selection } from './selection';
-import { cellSelection } from './cellSelection';
+import { gridFactory, Row, Grid, ColumnDef, GridOptions, GridFactory } from './grid';
+import Store from './Store';
+import paginationMixin from './paginationMixin';
+import editorMixin from './editorMixin';
+import decoratorMixin from './decoratorMixin';
+import selectionMixin, { Selection } from './selectionMixin';
+import cellSelectionMixin from './cellSelectionMixin';
 import compose from 'dojo-compose/compose';
 import { before } from 'dojo-compose/aspect';
 
@@ -11,28 +12,28 @@ const columns = [
 	{
 		name: 'First Name',
 		field: 'first',
-		renderCell: function(item: { first: string, last: string }) {
-			return <Element> null;
-		}
 	},
 	{ name: 'Last Name', field: 'last' }
 ];
 
+// The store specifies the type of item, and the grid will
+// infer the type.
 const store: Store<{ first: string, last: string }> = {
 	data: []
 };
 
-const selectionGridFactory = gridFactory.mixin({ mixin: selection });
-const paginatedGridFactory = gridFactory.mixin(pagination);
-const editorFactory = gridFactory.mixin(editor);
+// Implement various factories with different mixins
+const selectionGridFactory = gridFactory.mixin(selectionMixin);
+const paginatedGridFactory = gridFactory.mixin(paginationMixin);
+const editorFactory = gridFactory.mixin(editorMixin);
 const paginatedEditorDecoratorGridFactory = gridFactory
-	.mixin(pagination)
-	.mixin(editor)
-	.mixin(decorator);
-const cellSelectionFactory = gridFactory.mixin({ mixin: cellSelection });
+	.mixin(paginationMixin)
+	.mixin(editorMixin)
+	.mixin(decoratorMixin);
+const cellSelectionFactory = gridFactory.mixin(cellSelectionMixin);
 
 // Switch data declarations to see compilation failure because the type of data
-// doesn't match the type of the grid inferred from the store argument.
+// doesn't match the type the grid inferred from the store argument.
 const data = [
 	{ first: 'Bob', last: 'The Builder' },
 	{ first: 'Homer', last: 'Simpson' },
@@ -45,13 +46,17 @@ const data = [
 //	{ first: 'Tom'},
 //];
 
+
+// Initialize a basic grid with the ability to select rows programatically
 const basicGrid = selectionGridFactory({
 	domNode: document.body.querySelector('#grid'),
 	columns: columns,
 	store: store});
 basicGrid.render(data);
+// This selects the first row, setting the background color
 basicGrid.select(0);
 
+// Initialize a grid with pagination
 const paginatedGrid = paginatedGridFactory({
 	rowsPerPage: 1,
 	pageNumber: 1,
@@ -60,6 +65,7 @@ const paginatedGrid = paginatedGridFactory({
 });
 paginatedGrid.render(data);
 
+// Initialize a grid that allows the first name field to be edited
 const editorGrid = editorFactory({
 	editableFields: [ 'first' ],
 	columns: columns,
@@ -67,6 +73,7 @@ const editorGrid = editorFactory({
 });
 editorGrid.render(data);
 
+// Initialize a grid with multiple additional pieces of functionality mixed in
 const mixedGrid = paginatedEditorDecoratorGridFactory({
 	editableFields: [ 'first' ],
 	columns: columns,
@@ -78,11 +85,13 @@ const mixedGrid = paginatedEditorDecoratorGridFactory({
 });
 mixedGrid.render(data);
 
+// Initialize a grid that allows individual cells to be selected
 const cellSelectionGrid = cellSelectionFactory({domNode: document.body.querySelector('#cellSelection'), columns: columns});
 cellSelectionGrid.render(data);
 const row: Row = {
 	element: cellSelectionGrid.domNode.querySelector('.row')
 };
+// This selects the first cell and changes the background color
 cellSelectionGrid.select(0);
 // This line now, correctly, doesn't compile
 //cellSelectionGrid.select(row);

@@ -13,17 +13,22 @@
 	"filesGlob": [
 		"./src/**/*.ts",
 		"./tests/**/*.ts",
-		"./_modules/**/*.d.ts"
+		"./_modules/**/*.d.ts",
+		"./typings/tsd.d.ts"
 	],
 	"files": [
-		"./src/Decorator.ts",
-		"./src/Editor.ts",
-		"./src/List.ts",
-		"./src/Pagination.ts",
+		"./typings/tsd.d.ts",
+		"./src/cellSelection.ts",
+		"./src/decorator.ts",
+		"./src/editor.ts",
+		"./src/grid.ts",
+		"./src/list.ts",
+		"./src/pagination.ts",
+		"./src/selection.ts",
 		"./src/main.ts",
-		"./_modules/dojo-compose/typings/dojo-compose/dojo-compose-2.0.0-pre.d.ts",
-		"./_modules/dojo-compose/typings/node/node.d.ts",
-		"./_modules/dojo-core/_typings/dojo-core/dojo-core-2.0.0-pre.d.ts"
+		"./node_modules/dojo-compose/typings/dojo-compose/dojo-compose-2.0.0-beta.1.d.ts",
+		"./node_modules/dojo-compose/typings/node/node.d.ts",
+		"./node_modules/dojo-core/typings/dojo-core/dojo-core-2.0.0-alpha.3.d.ts"
 	],
 	"exclude": []
 }

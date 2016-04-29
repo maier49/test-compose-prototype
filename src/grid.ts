@@ -1,16 +1,15 @@
 import compose, {
 	ComposeFactory,
-	ComposeMixin,
+	ComposeMixinable,
+	ComposeMixinDescriptor,
 	ComposeInitializationFunction,
 	GenericClass
 } from 'dojo-compose/compose';
+import Store from './Store';
+
 export interface Row {
 	element: Element,
 	data?: {}
-}
-
-export interface Store<I> {
-	data: I[];
 }
 
 export interface Cell {
@@ -31,14 +30,20 @@ export interface GridOptions<T> {
 	store?: Store<T>
 }
 
+/**
+ * The BaseGridFactory and GridFactory methods provide the ability to add mixins to and extend the base Grid factory
+ * without losing the ability to use generics.
+ */
 export interface BaseGridFactory<O> {
 	<P>(options?: GridOptions<P>): Grid<P>;
-	mixin<P, U, V>(mixin: ComposeMixin<Grid<any>, V, U, P>): GridFactory<O & P, U>;
+	mixin<U, P>(mixin: ComposeMixinable<U, P>): GridFactory<U, O & P>;
+	mixin<U, P>(mixin: ComposeMixinDescriptor<Grid<any>, O, U, P>): GridFactory<U, O & P>;
 }
 
-export interface GridFactory<O, T> extends ComposeFactory<O,T> {
+export interface GridFactory<T, O> extends ComposeFactory<T, O> {
 	<P>(options?: GridOptions<P>): Grid<P> & T;
-	mixin<P, U, V>(mixin: ComposeMixin<Grid<any> & T, V, U, P>): GridFactory<O & P, T & U>;
+	mixin<U, P>(mixin: ComposeMixinable<U, P>): GridFactory<T & U, O & P>;
+	mixin<U, P>(mixin: ComposeMixinDescriptor<T, O, U, P>): GridFactory<T & U, O & P>;
 }
 
 export class Grid<T> {
